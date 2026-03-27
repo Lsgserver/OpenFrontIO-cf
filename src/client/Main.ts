@@ -58,7 +58,6 @@ import {
 } from "./Utils";
 import "./components/DesktopNavBar";
 import "./components/Footer";
-import "./components/HomeFooterAd";
 import "./components/MainLayout";
 import "./components/MobileNavBar";
 import "./components/PlayPage";
@@ -250,7 +249,6 @@ class Client {
   private tokenLoginModal: TokenLoginModal;
   private matchmakingModal: MatchmakingModal;
 
-  private gutterAds: GutterAds;
   private turnstileTokenPromise: Promise<{
     token: string;
     createdAt: number;
@@ -309,11 +307,6 @@ class Client {
         await crazyGamesSDK.gameplayStop();
       }
     });
-
-    const gutterAds = document.querySelector("gutter-ads");
-    if (!(gutterAds instanceof GutterAds))
-      throw new Error("Missing gutter-ads");
-    this.gutterAds = gutterAds;
 
     document.addEventListener("join-lobby", this.handleJoinLobby.bind(this));
     document.addEventListener("leave-lobby", this.handleLeaveLobby.bind(this));
@@ -784,7 +777,6 @@ class Client {
         "token-login",
         "matchmaking-modal",
         "lang-selector",
-        "gutter-ads",
       ].forEach((tag) => {
         const modal = document.querySelector(tag) as HTMLElement & {
           close?: () => void;
@@ -797,9 +789,6 @@ class Client {
         }
       });
       this.gameModeSelector.stop();
-      document.querySelectorAll(".ad").forEach((ad) => {
-        (ad as HTMLElement).style.display = "none";
-      });
 
       crazyGamesSDK.loadingStart();
 
@@ -816,10 +805,6 @@ class Client {
       this.joinModal?.closeWithoutLeaving();
       this.gameModeSelector.stop();
       incrementGamesPlayed();
-
-      document.querySelectorAll(".ad").forEach((ad) => {
-        (ad as HTMLElement).style.display = "none";
-      });
 
       if (window.PageOS?.session?.newPageView) {
         window.PageOS.session.newPageView();
