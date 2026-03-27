@@ -14,6 +14,8 @@ import {
   writePublicAssetManifestModule,
 } from "./src/server/PublicAssetManifest";
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 // Vite already handles these, but its good practice to define them explicitly
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -89,34 +91,28 @@ export default defineConfig(({ mode }) => {
       },
     },
 
-    plugins: [
-      tsconfigPaths(),
-      ...(isProduction
-        ? []
-        : [
-            createHtmlPlugin({
-              minify: false,
-              entry: "/src/client/Main.ts",
-              template: "index.html",
-              inject: {
-                data: {
-                  gitCommit: JSON.stringify("DEV"),
-                  ...htmlAssetData,
-                },
+    plugins: [tsconfigPaths(), ...(isProduction
+      ? []
+      : [
+          createHtmlPlugin({
+            minify: false,
+            entry: "/src/client/Main.ts",
+            template: "index.html",
+            inject: {
+              data: {
+                gitCommit: JSON.stringify("DEV"),
+                ...htmlAssetData,
               },
-            }),
-          ]),
-      viteStaticCopy({
-        targets: [
-          {
-            src: "proprietary/*",
-            dest: ".",
-          },
-        ],
-      }),
-      ...(isProduction ? [syncHashedPublicAssets()] : []),
-      tailwindcss(),
-    ],
+            },
+          }),
+        ]), viteStaticCopy({
+      targets: [
+        {
+          src: "proprietary/*",
+          dest: ".",
+        },
+      ],
+    }), ...(isProduction ? [syncHashedPublicAssets()] : []), tailwindcss(), cloudflare()],
 
     define: {
       __ASSET_MANIFEST__: JSON.stringify(assetManifest),

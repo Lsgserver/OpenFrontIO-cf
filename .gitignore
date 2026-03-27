@@ -18,3 +18,9 @@ src/assets/
 *.log
 *debug*.txt
 eslint_out.txt
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
